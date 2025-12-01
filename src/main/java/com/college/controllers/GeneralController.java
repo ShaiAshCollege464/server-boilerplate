@@ -17,7 +17,7 @@ public class GeneralController {
     private DbUtils dbUtils;
 
     @RequestMapping ("/get-data")
-    public String getAllUsers () {
+    public String getData () {
         return "Hello world!";
     }
 
