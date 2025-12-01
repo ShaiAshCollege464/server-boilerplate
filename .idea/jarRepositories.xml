@@ -21,5 +21,10 @@
       <option name="name" value="github" />
       <option name="url" value="https://maven.pkg.github.com/elector2019/shared-utils" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="github-tzur-ash" />
+      <option name="name" value="github-tzur-ash" />
+      <option name="url" value="https://maven.pkg.github.com/tzur-ash/shared-utils" />
+    </remote-repository>
   </component>
 </project>
