@@ -5,6 +5,8 @@ import com.college.entities.User;
 import com.college.responses.BasicResponse;
 import com.college.responses.UserResponse;
 import com.college.responses.UsersResponse;
+import com.college.utils.DbUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -16,45 +18,21 @@ import static com.college.utils.Errors.*;
 
 @RestController
 public class GeneralController {
-    private List<User> users = new ArrayList<>();
+
+    @Autowired
+    private DbUtils dbUtils;
 
     @PostConstruct
     public void init() {
-
     }
 
-    public User getUser(String username, String password) {
-        User found = null;
-        for (User user : this.users) {
-            if (user.getName().equals(username) && user.getPassword().equals(password)) {
-                found = user;
-                break;
-            }
-        }
-        return found;
-    }
-
-    public int getUserIndex(String username) {
-        int userIndex = 0;
-        for (int i = 0; i < this.users.size(); i++) {
-            if (this.users.get(i).getName().equals(username)) {
-                userIndex = i;
-                break;
-            }
-        }
-        return userIndex;
-    }
 
     @RequestMapping("/delete")
-    public BasicResponse delete(String username) {
-        if (username != null) {
-            if (usernameExistsOnTheDn(username)) {
-                int userDeleteIndex = getUserIndex(username);
-                this.users.remove(userDeleteIndex);
-                return new BasicResponse(true, null);
-            } else {
-                return new BasicResponse(false, ERROR_USERNAME_NOT_SIGNED_UP);
-            }
+    public BasicResponse delete(int id) {
+        if (id != 0) {
+            dbUtils.delete(id);
+            return new BasicResponse(true, null);
+
         } else {
             return new BasicResponse(false, ERROR_MISSING_USERNAME);
         }
@@ -85,7 +63,7 @@ public class GeneralController {
 
     @RequestMapping("returnAllusers")
     public BasicResponse returnAllusers (){
-        return new UsersResponse(true, null, users);
+        return new UsersResponse(true, null, dbUtils.getAllUsers());
     }
 
     @RequestMapping("sign-up")
@@ -94,7 +72,7 @@ public class GeneralController {
             if (password != null) {
                 if (!usernameExistsOnTheDn(username)) {
                     User newUser = new User(username, password);
-                    users.add(newUser);
+                    dbUtils.insertUser(newUser);
                     return new BasicResponse(true, null);
                 } else {
                     return new BasicResponse(false, ERROR_USERNAME_TAKEN);
@@ -108,14 +86,21 @@ public class GeneralController {
     }
 
     private boolean usernameExistsOnTheDn(String username) {
-        for (User user : users) {
-            if (user.getName().equals(username)) {
-                return true;
-            }
-        }
-        return false;
+        return dbUtils.doesUsernameExist(username);
     }
 
+    //CRUD
+    //Create - INSERT
+    //Read -> SELECT
+    //Update -> UPDATE
+    //Delete -> DELETE
+
+
+
+    public User getUser(String username, String password) {
+        return dbUtils.getUser(username,password);
+
+    }
 
 
 }
